@@ -1,1 +1,2 @@
-web: python main.py 
+web: python main.py thin start -p $PORT
+
