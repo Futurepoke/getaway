@@ -1,8 +1,8 @@
 import telebot
+import os
 from telebot import types
-import config
 
-bot = telebot.TeleBot(config.token)
+bot = telebot.TeleBot(os.environ.get('token'))
 
 def horvert(input):
     horizon = ''
