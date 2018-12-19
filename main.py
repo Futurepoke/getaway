@@ -13,15 +13,6 @@ PORT = int(os.environ.get('PORT', '8443'))
 updater = Updater(TOKEN)
 dispatcher = updater.dispatcher
 
-updater.start_webhook(listen="0.0.0.0",
-                      port=PORT,
-                      url_path=TOKEN)
-updater.bot.set_webhook("https://gettaway.herokuapp.com/" + TOKEN)
-updater.idle()
-
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                     level=logging.INFO)
-
 def inline_caps(bot, update):
     query = update.inline_query.query
     if not query:
@@ -55,3 +46,12 @@ def inline_horvert(input):
         vertirizon += i
         vertirizon += "\n"
     return horizon + "\n" + vertirizon
+
+updater.start_webhook(listen="0.0.0.0",
+                      port=PORT,
+                      url_path=TOKEN)
+updater.bot.set_webhook("https://gettaway.herokuapp.com/" + TOKEN)
+updater.idle()
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                     level=logging.INFO)
