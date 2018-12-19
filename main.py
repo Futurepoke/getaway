@@ -45,8 +45,6 @@ dispatcher.add_handler(start_handler)
 inline_caps_handler = InlineQueryHandler(inline_caps)
 dispatcher.add_handler(inline_caps_handler)
 
-updater.start_polling()
-
 def inline_horvert(input):
     horizon = ''
     for i in input:
