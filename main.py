@@ -1,19 +1,51 @@
-import telebot
+import logging
 import os
-from telebot import types
+from telegram.ext import Updater
+from telegram.ext import CommandHandler
+from telegram import InlineQueryResultArticle, InputTextMessageContent
+from telegram.ext import InlineQueryHandler
 
-bot = telebot.TeleBot(os.environ.get('token'))
 
-def horvert(input):
-    horizon = ''
-    for i in input.text:
-        horizon += i
-        horizon += "   "
-    vertirizon = ''
-    for i in input.text[1:]:
-        vertirizon += i
-        vertirizon += "\n"
-    return horizon + "\n" + vertirizon
+TOKEN = os.environ.get('token')
+PORT = int(os.environ.get('PORT', '8443'))
+
+
+updater = Updater(TOKEN)
+dispatcher = updater.dispatcher
+
+updater.start_webhook(listen="0.0.0.0",
+                      port=PORT,
+                      url_path=TOKEN)
+updater.bot.set_webhook("https://gettaway.herokuapp.com/" + TOKEN)
+updater.idle()
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                     level=logging.INFO)
+
+def inline_caps(bot, update):
+    query = update.inline_query.query
+    if not query:
+        return
+    results = list()
+    results.append(
+        InlineQueryResultArticle(
+            id=query.upper(),
+            title='leaveit',
+            input_message_content=InputTextMessageContent(inline_horvert(query))
+        )
+    )
+    bot.answer_inline_query(update.inline_query.id, results)
+
+def start(bot, update):
+    bot.send_message(chat_id=update.message.chat_id, text="I'm a useless bot, please kill me!")
+
+start_handler = CommandHandler('start', start)
+dispatcher.add_handler(start_handler)
+
+inline_caps_handler = InlineQueryHandler(inline_caps)
+dispatcher.add_handler(inline_caps_handler)
+
+updater.start_polling()
 
 def inline_horvert(input):
     horizon = ''
@@ -25,23 +57,3 @@ def inline_horvert(input):
         vertirizon += i
         vertirizon += "\n"
     return horizon + "\n" + vertirizon
-
-@bot.message_handler(content_types=["text"])
-def echoes(message):
-    try:
-        bot.send_message(message.chat.id, horvert(message))
-    except Exception as e:
-        print(e)
-
-@bot.inline_handler(lambda query: query.query )
-def query_text(inline_query):
-    try:
-        result = inline_horvert(inline_query.query)
-        r = types.InlineQueryResultArticle('2', 'Process text', types.InputTextMessageContent(result))
-        bot.answer_inline_query(inline_query.id, [r])
-    except Exception as e:
-        print(e)
-
-
-if __name__ == '__main__':
-    bot.polling(none_stop = True)
